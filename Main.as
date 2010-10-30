@@ -4,6 +4,7 @@
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.text.TextField;
 	import flash.utils.getTimer;
 	
 	public class Main extends MovieClip
@@ -25,6 +26,11 @@
 		
 		//random shit for visuals
 		private var dZone:DeadZone = new DeadZone();
+		
+		private var player1Box:TextField = new TextField();
+		private var player2Box:TextField = new TextField();
+		private var player3Box:TextField = new TextField();
+		private var player4Box:TextField = new TextField();
 		
 		public function Main()
 		{			
@@ -52,6 +58,26 @@
 			
 			this.addEventListener(Event.ENTER_FRAME, tick);
 			this.addEventListener(Event.ENTER_FRAME, checkCollision);
+			
+			player1Box.x = 500;
+			player1Box.y = 100;
+			player1Box.text = "Player1: " + player1Score;
+			stage.addChild(player1Box);
+			
+			player2Box.x = 600;
+			player2Box.y = 100;
+			player2Box.text = "Player2: " + player2Score;
+			stage.addChild(player2Box);
+			
+			player3Box.x = 500;
+			player3Box.y = 150;
+			player3Box.text = "Player3: " + player3Score;
+			stage.addChild(player3Box);
+			
+			player4Box.x = 600;
+			player4Box.y = 150;
+			player4Box.text = "Player4: " + player4Score;
+			stage.addChild(player4Box);
 			
 		}
 		
@@ -102,10 +128,10 @@
 									player4Score++;
 								}
 								
-								trace("player1: " + player1Score);
-								trace("player2: " + player2Score);
-								trace("player3: " + player3Score);
-								trace("player4: " + player4Score);
+								player1Box.text = "Player1: " + player1Score;
+								player2Box.text = "Player2: " + player2Score;
+								player3Box.text = "Player3: " + player3Score;
+								player4Box.text = "Player4: " + player4Score;
 								
 								break;
 							}
@@ -126,6 +152,10 @@
 			stage.addChild(newShape);
 			
 			stage.setChildIndex(dZone, stage.numChildren-1);
+			stage.setChildIndex(player1Box, stage.numChildren-1);
+			stage.setChildIndex(player2Box, stage.numChildren-1);
+			stage.setChildIndex(player3Box, stage.numChildren-1);
+			stage.setChildIndex(player4Box, stage.numChildren-1);
 			
 			if(CONTROL_TYPE == "Mouse") {
 				newShape.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownResponse);
