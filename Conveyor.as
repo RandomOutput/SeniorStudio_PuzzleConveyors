@@ -34,25 +34,25 @@
 		}
 		
 		public function moveItem(item:PuzzleShape):void {
-			trace("START_MOVE");
+			//trace("START_MOVE");
 			if(item.x == leftBound) {//if on left edge
 				
-				trace("on left edge");
+				//trace("on left edge");
 				
 				if(moveDirection == "clockwise") { //move up
-					trace("clockwise move");
+					//trace("clockwise move");
 					if(item.y - speed >= topBound) {
 						item.y -= speed;
 					} else { item.y = topBound; }
 				} else if(moveDirection == "counterclockwise") { //move down
-					trace("counterclockwise move");
+					//trace("counterclockwise move");
 					if(item.y + speed <= bottomBound) {
 						item.y += speed;
 					} else { item.y = bottomBound; }
 				}
 			} else if(item.x == rightBound) {//if on right edge
 				
-				trace("on right edge");
+				//trace("on right edge");
 				
 				if(moveDirection == "clockwise") { //move down
 					if(item.y + speed <= bottomBound) {
@@ -67,22 +67,22 @@
 				
 			if(item.y == topBound) {
 				
-				trace("on top edge");
+				//trace("on top edge");
 				
 				if(moveDirection == "clockwise") { //move right
-					trace("clockwise move");
+				//	trace("clockwise move");
 					if(item.x + speed <= rightBound) {
 						item.x += speed;
 					} else { item.x = rightBound; }
 				} else if(moveDirection == "counterclockwise") { //move left
-					trace("counterclockwise move");
+				//	trace("counterclockwise move");
 					if(item.x - speed >= leftBound) {
 						item.x -= speed;
 					} else { item.x = leftBound; }
 				}
 			} else if(item.y == bottomBound) {
 				
-				trace("on bottom edge");
+				//trace("on bottom edge");
 				
 				if(moveDirection == "clockwise") { //move left
 					if(item.x - speed >= leftBound) {

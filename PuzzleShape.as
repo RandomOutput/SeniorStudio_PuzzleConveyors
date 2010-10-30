@@ -13,7 +13,13 @@ package
 			
 			switch(_shapeType) {
 				case 0: //square
-					this.gotoAndStop(0);
+					this.gotoAndStop(1);
+					break;
+				case 1: //cirlce
+					this.gotoAndStop(2);
+					break;
+				case 2: //triangle
+					this.gotoAndStop(3);
 					break;
 				default:
 					trace("ERROR: non-recognized shape type [PuzzleShape -> PuzzleShape()]");
