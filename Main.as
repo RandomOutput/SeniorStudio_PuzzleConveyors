@@ -34,6 +34,7 @@
 			this.addEventListener(Event.ENTER_FRAME, spawnOuter);
 			
 			this.addEventListener(Event.ENTER_FRAME, tick);
+			this.addEventListener(Event.ENTER_FRAME, checkCollision);
 			
 		}
 		
@@ -48,22 +49,38 @@
 		private function tick(e:Event):void {
 			innerConveyor.tick();
 			outerConveyor.tick();
-			//dragObjects();
+		}
+		
+		private function checkCollision(e:Event) {
+			for(var i:int=0;i<dragList.length;i++) {
+				for(var j:int=0;j<puzzle001.numChildren;j++) {
+					if((dragList[i] as MovieClip).hitTestObject((puzzle001.getChildAt[j] as MovieClip))) {
+						var puzzPoint:Point = new Point(puzzle001.getChildAt[i].x, puzzle001.getChildAt[i].y);
+						stage.localToGlobal(puzzPoint);
+						
+						dragList[i].x = puzzPoint.x;
+						dragList[i].y = puzzPoint.y;
+						
+						for(var k:int=0;k<dragList.length; k++) {
+							trace();
+							(dragList[k] as MovieClip).stopDrag();
+						}
+						
+						dragList = new Array();
+					}
+				}
+			}
 		}
 		
 		private function spawnItem(conveyor:Conveyor) {
-			//trace("conveyor.leftBound: " + conveyor.leftBound);
-			//trace("conveyor.rightBound: " + conveyor.rightBound);
 			
 			var spawnType = Math.floor(Math.random()*3);
-			//trace(spawnType);
 			
 			var newShape = new PuzzleShape(conveyor.leftBound, conveyor.topBound, spawnType);
 			conveyor.items.push(newShape);
 			stage.addChild(newShape);
 			
 			if(CONTROL_TYPE == "Mouse") {
-				//trace("add mouse control");
 				newShape.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownResponse);
 			}
 		}
@@ -125,6 +142,8 @@
 			if(innerConveyor.items.length < 18 && (getTimer() - lastInnerSpawn) > 500) {
 				spawnItem(innerConveyor);
 				lastInnerSpawn = getTimer();
+			} else if(outerConveyor.items.length >= 18) {
+				this.removeEventListener(Event.ENTER_FRAME, spawnInner);
 			}
 		}
 		
@@ -132,6 +151,8 @@
 			if(outerConveyor.items.length < 24 && (getTimer() - lastOuterSpawn) > 500) {
 				spawnItem(outerConveyor);
 				lastOuterSpawn = getTimer();
+			} else if(outerConveyor.items.length >= 24) {
+				this.removeEventListener(Event.ENTER_FRAME, spawnOuter);
 			}
 		}
 	}
