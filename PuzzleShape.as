@@ -1,15 +1,15 @@
-package
+﻿package
 {
 	import flash.display.MovieClip;
 	
 	public class PuzzleShape extends MovieClip
 	{
-		private var shapeType:Number = 0;
+		public var shapeType:Number = 0;
+		public var controllingPlayer:Number = 0;
 		
-		public function PuzzleShape(_x, _y, _shapeType:Number)
-		{
-			this.x = _x;
-			this.y = _y;
+		public function PuzzleShape(_shapeType:Number)
+		{			
+			shapeType = _shapeType;
 			
 			switch(_shapeType) {
 				case 0: //square

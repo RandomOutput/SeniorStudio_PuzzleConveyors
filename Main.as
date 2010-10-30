@@ -18,6 +18,14 @@
 		
 		private var dragList:Array;
 		
+		private var player1Score:int;
+		private var player2Score:int;
+		private var player3Score:int;
+		private var player4Score:int;
+		
+		//random shit for visuals
+		private var dZone:DeadZone = new DeadZone();
+		
 		public function Main()
 		{			
 			initControls();
@@ -29,6 +37,15 @@
 			lastOuterSpawn = getTimer();
 			
 			dragList = new Array();
+			
+			player1Score = 0;
+			player2Score = 0;
+			player3Score = 0;
+			player4Score = 0;
+			
+			dZone.x = 640.95;
+			dZone.y = 158.00;
+			stage.addChild(dZone);
 			
 			this.addEventListener(Event.ENTER_FRAME, spawnInner);
 			this.addEventListener(Event.ENTER_FRAME, spawnOuter);
@@ -54,19 +71,45 @@
 		private function checkCollision(e:Event) {
 			for(var i:int=0;i<dragList.length;i++) {
 				for(var j:int=0;j<puzzle001.numChildren;j++) {
-					if((dragList[i] as MovieClip).hitTestObject((puzzle001.getChildAt[j] as MovieClip))) {
-						var puzzPoint:Point = new Point(puzzle001.getChildAt[i].x, puzzle001.getChildAt[i].y);
-						stage.localToGlobal(puzzPoint);
-						
-						dragList[i].x = puzzPoint.x;
-						dragList[i].y = puzzPoint.y;
-						
-						for(var k:int=0;k<dragList.length; k++) {
-							trace();
-							(dragList[k] as MovieClip).stopDrag();
+					if(puzzle001.getChildAt(j) is MovieClip) {
+						if((dragList[i] as MovieClip).hitTestObject((puzzle001.getChildAt(j) as MovieClip))) {
+							if(((dragList[i] as PuzzleShape).shapeType == 0 && puzzle001.getChildAt(j) is squareGoal) ||
+								((dragList[i] as PuzzleShape).shapeType == 1 && puzzle001.getChildAt(j) is circleGoal) ||
+								((dragList[i] as PuzzleShape).shapeType == 2 && puzzle001.getChildAt(j) is triGoal)) {
+								var puzzPoint:Point = new Point(puzzle001.getChildAt(j).x, puzzle001.getChildAt(j).y);
+								var target = dragList[i];
+								trace("drag list target: " + dragList);
+								trace(puzzle001.getChildAt(j));
+								stage.localToGlobal(puzzPoint);
+								
+								for(var k:int=0;k<dragList.length; k++) {
+									(dragList[k] as MovieClip).stopDrag();
+								}
+								
+								dragList = new Array();
+								trace("puzzleX: " + puzzPoint.x);
+								trace("puzzleY: " + puzzPoint.y);
+								target.x = puzzPoint.x + puzzle001.x;
+								target.y = puzzPoint.y + puzzle001.y;
+								
+								if((target as PuzzleShape).controllingPlayer == 1) {
+									player1Score++;
+								} else if((target as PuzzleShape).controllingPlayer == 2) {
+									player2Score++;
+								} else if((target as PuzzleShape).controllingPlayer == 3) {
+									player3Score++;
+								} else if((target as PuzzleShape).controllingPlayer == 4) {
+									player4Score++;
+								}
+								
+								trace("player1: " + player1Score);
+								trace("player2: " + player2Score);
+								trace("player3: " + player3Score);
+								trace("player4: " + player4Score);
+								
+								break;
+							}
 						}
-						
-						dragList = new Array();
 					}
 				}
 			}
@@ -76,9 +119,13 @@
 			
 			var spawnType = Math.floor(Math.random()*3);
 			
-			var newShape = new PuzzleShape(conveyor.leftBound, conveyor.topBound, spawnType);
+			var newShape:PuzzleShape = new PuzzleShape(spawnType);
+			newShape.x = conveyor.leftBound;
+			newShape.y = conveyor.topBound;
 			conveyor.items.push(newShape);
 			stage.addChild(newShape);
+			
+			stage.setChildIndex(dZone, stage.numChildren-1);
 			
 			if(CONTROL_TYPE == "Mouse") {
 				newShape.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownResponse);
@@ -86,11 +133,25 @@
 		}
 		
 		private function mouseDownResponse(e:MouseEvent) {
-			trace("mouse down");
+			if(zoneA.hitTestPoint(e.target.parent.x, e.target.parent.y)) {
+				(e.target.parent as PuzzleShape).controllingPlayer = 1;
+			} else if(zoneB.hitTestPoint(e.target.parent.x, e.target.parent.y)) {
+				(e.target.parent as PuzzleShape).controllingPlayer = 2;
+			} else if(zoneC.hitTestPoint(e.target.parent.x, e.target.parent.y)) {
+				(e.target.parent as PuzzleShape).controllingPlayer = 3;
+			} else if(zoneD.hitTestPoint(e.target.parent.x, e.target.parent.y)) {
+				(e.target.parent as PuzzleShape).controllingPlayer = 4;
+			} else { return; }
+			//trace("mouse down");
 			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpResponse);
-			pullObject((e.target as MovieClip));
-			dragList.push(e.target);
-			e.target.startDrag();
+			//trace("pull object: " + e.target);
+			//trace("pull object parent: " + e.target.parent);
+			pullObject((e.target.parent as MovieClip));
+			dragList.push(e.target.parent);
+			
+			
+			
+			e.target.parent.startDrag();
 		}
 		
 		private function mouseUpResponse(e:MouseEvent) {
@@ -106,14 +167,14 @@
 			var foundObject = null;
 			
 			for(var i:int=0;i<innerConveyor.items.length;i++) {
-				if(innerConveyor.items[i] == target.parent) {
+				if(innerConveyor.items[i] == target) {
 					foundObject = innerConveyor.items.splice(i,1);
 				}
 			}
 			
 			if(foundObject == null) {
 				for(var j:int=0;j<outerConveyor.items.length;j++) {
-					if(outerConveyor.items[j] == target.parent) {
+					if(outerConveyor.items[j] == target) {
 						foundObject = outerConveyor.items.splice(j,1);
 					}
 				}
