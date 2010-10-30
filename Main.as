@@ -1,4 +1,6 @@
-﻿package
+﻿//This is prototype code and is meant to be thrown out.
+
+package
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -6,6 +8,11 @@
 	import flash.geom.Point;
 	import flash.text.TextField;
 	import flash.utils.getTimer;
+	
+	import org.tuio.*;
+	import org.tuio.TuioEvent;
+	import org.tuio.connectors.*;
+	import org.tuio.osc.*;
 	
 	public class Main extends MovieClip
 	{
@@ -24,6 +31,12 @@
 		private var player3Score:int;
 		private var player4Score:int;
 		
+		private var controlPoints:Array;
+		
+		//tuio stuffs
+		private var tuio:TuioClient;
+		private var tuioMngr:TuioManager;
+		
 		//random shit for visuals
 		private var dZone:DeadZone = new DeadZone();
 		
@@ -32,7 +45,12 @@
 		private var player3Box:TextField = new TextField();
 		private var player4Box:TextField = new TextField();
 		
-		public function Main()
+		public function Main() {
+			if (stage) { init(); }
+			else { addEventListener(Event.ADDED_TO_STAGE, init); }
+		}
+		
+		public function init()
 		{			
 			initControls();
 			
@@ -85,7 +103,14 @@
 			if(CONTROL_TYPE == "Mouse") {
 				
 			} else if(CONTROL_TYPE == "TUIO_UDP") {
+				this.tuio = new TuioClient(new UDPConnector());			
+				//TUIO manager will watch for all incoming TUIO data
+				this.tuioMngr = TuioManager.init(stage, this.tuio);
 				
+				//listeners to track for new, upadates, and removed TUIO data points.
+				this.tuioMngr.addEventListener(TuioEvent.ADD, tuioAddHandler);
+				this.tuioMngr.addEventListener(TuioEvent.UPDATE, tuioUpdateHandler);
+				this.tuioMngr.addEventListener(TuioEvent.REMOVE, tuioRemoveHandler);
 			}
 		}
 		
@@ -160,6 +185,10 @@
 			if(CONTROL_TYPE == "Mouse") {
 				newShape.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownResponse);
 			}
+		}
+		
+		private function tuioAddHandler() {
+			
 		}
 		
 		private function mouseDownResponse(e:MouseEvent) {
